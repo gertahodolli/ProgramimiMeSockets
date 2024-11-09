@@ -24,6 +24,11 @@ public class TCPClient {
 
                 out.println(message);
                 String response = in.readLine();
+
+                if (response == null) {
+                    System.out.println("Server disconnected.");
+                    break;
+                }
                 System.out.println("Server response: " + response);
             }
         } catch (IOException e) {

@@ -95,7 +95,22 @@ public class TCPServer {
                     out.println("No files available in the directory.");
                 }
             }
-
+            else if (command.startsWith("DELETE")) {
+                String[] parts = command.split(" ");
+                if (parts.length < 2) {
+                    out.println("Invalid DELETE command format. Usage: DELETE <filename>");
+                } else {
+                    File file = new File(serverFiles, parts[1]);
+                    if (file.exists() && file.delete()) {
+                        out.println("File deleted successfully.");
+                    } else {
+                        out.println("File not found or unable to delete.");
+                    }
+                }
+            }
+            else {
+                out.println("Command received: " + command);
+            }
         }
     }
 }

@@ -118,5 +118,15 @@ public class TCPServer {
             log.add(logEntry);
             System.out.println(logEntry);
         }
+
+        private void closeConnection() {
+            try {
+                clients.remove(socket);
+                socket.close();
+                System.out.println("Connection closed: " + socket.getInetAddress());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

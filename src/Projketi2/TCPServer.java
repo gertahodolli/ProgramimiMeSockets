@@ -2,8 +2,11 @@ package Projketi2;
 
 import java.io.*;
 import java.net.*;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.*;
+
+import static java.lang.System.out;
 
 public class TCPServer {
 
@@ -22,14 +25,14 @@ public class TCPServer {
         }
 
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
-            System.out.println("Server listening on port " + PORT);
+            out.println("Server listening on port " + PORT);
 
 
             while (true) {
 
                 if (clients.size() < MAX_CLIENTS) {
                     Socket clientSocket = serverSocket.accept(); // Prano lidhjen e re të klientit
-                    System.out.println("Client connected: " + clientSocket.getInetAddress());
+                    out.println("Client connected: " + clientSocket.getInetAddress());
 
                     // Përcaktoni nëse ky është klienti i parë (Plotëson kërkesën 6)
                     boolean fullAccess = clients.size() == 0;
@@ -43,7 +46,7 @@ public class TCPServer {
                 } else {
                     // Shfaq një mesazh kur numri maksimal i klientëve është arritur
                     if (!maxClientsReached) {
-                        System.out.println("Max clients reached. Rejecting new connections.");
+                        out.println("Max clients reached. Rejecting new connections.");
                         maxClientsReached = true; // Vendos flagun për të treguar që max klientët janë arritur
                     }
                 }
@@ -53,11 +56,31 @@ public class TCPServer {
         }
     }
 
-static class ClientHandler implements Runnable {
+    static class ClientHandler implements Runnable {
         public ClientHandler(Socket clientSocket, boolean fullAccess){}
 
-    @Override
-    public void run() {
+        @Override
+        public void run() {
 
+        }
+
+        private void handleFullAccessCommand(String command) throws IOException{
+            if (command.startsWith("READ")) {
+                File file = new File(serverFiles, command.split(" ")[1]);
+                if (file.exists()) {
+                    out.println("File contents: " + new String(Files.readAllBytes(file.toPath())));
+                } else {
+                    out.println("File not found.");
+                }
+            }
+            else if (command.equals("LIST")) {
+                String[] files = serverFiles.list();
+                if (files != null && files.length > 0) {
+                    out.println("Files available: " + String.join(", ", files));
+                } else {
+                    out.println("No files available in the directory.");
+                }
+            }
+        }
     }
-}}
+}

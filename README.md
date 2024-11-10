@@ -12,7 +12,7 @@ The Programming with Sockets project is a TCP-based client-server application wr
 - [Running the Application](#running-the-application)
   - [Setting Up](#setting-up)
   - [Compiling the Java Files](#compiling-the-java-files)
-
+- [Authors](#authors)
 ## Components
 The system includes two main components:
 - **Server**: Manages client connections, processes commands, and handles file operations.

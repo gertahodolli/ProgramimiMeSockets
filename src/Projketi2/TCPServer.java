@@ -57,11 +57,57 @@ public class TCPServer {
     }
 
     static class ClientHandler implements Runnable {
-        public ClientHandler(Socket clientSocket, boolean fullAccess){}
+        private Socket socket;
+        private BufferedReader in;
+        private PrintWriter out;
+        private boolean fullAccess;
+
+        public ClientHandler(Socket socket, boolean fullAccess) {
+            this.socket = socket;
+            this.fullAccess = fullAccess;
+            try {
+                this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                this.out = new PrintWriter(socket.getOutputStream(), true);
+            } catch (IOException e) {
+                e.printStackTrace(); // Shfaq një gabim nëse ndodh gabim gjatë lidhjes
+            }
+        }
 
         @Override
         public void run() {
+            try {
+                socket.setSoTimeout((int) TIMEOUT);
 
+                while (true) {
+                    String message = in.readLine();
+                    if (message == null) break;
+                    logRequest(message);
+                    System.out.println("Received from client: " + message);
+
+
+                    if (!fullAccess) {
+                        try {
+                            Thread.sleep(200);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+
+                    if (fullAccess) {
+                        handleFullAccessCommand(message);
+                    } else {
+                        handleReadOnlyCommand(message);
+                    }
+                }
+            }
+            catch (SocketTimeoutException e) {
+                System.out.println("Client timed out: " + socket.getInetAddress());
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                closeConnection();
+            }
         }
 
         private void handleFullAccessCommand(String command) throws IOException{

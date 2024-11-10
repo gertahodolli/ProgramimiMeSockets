@@ -112,5 +112,11 @@ public class TCPServer {
                 out.println("Command received: " + command);
             }
         }
+
+        private void logRequest(String message) {
+            String logEntry = new Date() + " - " + socket.getInetAddress() + ": " + message;
+            log.add(logEntry);
+            System.out.println(logEntry);
+        }
     }
 }

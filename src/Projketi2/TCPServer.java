@@ -159,6 +159,21 @@ public class TCPServer {
             }
         }
 
+        private void handleReadOnlyCommand(String command) throws IOException {
+            if (command.startsWith("READ")) {
+                File file = new File(serverFiles, command.split(" ")[1]);
+                if (file.exists()) {
+                    out.println("File contents: " + new String(Files.readAllBytes(file.toPath())));
+                } else {
+                    out.println("File not found.");
+                }
+            } else if (command.startsWith("WRITE") || command.startsWith("DELETE") || command.equals("LIST")) {
+                out.println("You have read-only access. Command not allowed: " + command);
+            } else {
+                out.println("Message received: " + command);
+            }
+        }
+
         private void logRequest(String message) {
             String logEntry = new Date() + " - " + socket.getInetAddress() + ": " + message;
             log.add(logEntry);

@@ -73,6 +73,20 @@ public class TCPServer {
                     out.println("File not found.");
                 }
             }
+            else if (command.startsWith("WRITE")) {
+                String[] parts = command.split(" ", 3);
+                if (parts.length < 3) {
+                    out.println("Invalid WRITE command format. Usage: WRITE <filename> <text>");
+                } else {
+                    File file = new File(serverFiles, parts[1]);
+                    try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
+                        writer.write(parts[2] + "\n");
+                        out.println("Write successful.");
+                    } catch (IOException e) {
+                        out.println("Error writing to file.");
+                    }
+                }
+            }
             else if (command.equals("LIST")) {
                 String[] files = serverFiles.list();
                 if (files != null && files.length > 0) {
@@ -81,6 +95,7 @@ public class TCPServer {
                     out.println("No files available in the directory.");
                 }
             }
+
         }
     }
 }
